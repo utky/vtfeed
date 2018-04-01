@@ -1,0 +1,49 @@
+{:duct.core/project-ns  vtfeed
+ :duct.core/environment :production
+
+ :duct.module/logging {}
+ :duct.module.web/api {}
+ :duct.module/sql {}
+ :duct.module/cljs {:main vtfeed.client}
+
+ :duct.migrator/ragtime
+  {:database   #ig/ref :duct.database/sql
+   :logger     #ig/ref :duct/logger
+   :strategy   :rebase
+   :migrations [#ig/ref :vtfeed.migration/subscriptions]}
+
+ [:duct.migrator.ragtime/sql :vtfeed.migration/subscriptions]
+ {:up ["CREATE TABLE subscriptions (
+          id    varchar PRIMARY KEY,
+          name  varchar(255)
+        );"]
+  :down ["DROP TABLE subscriptions;"]}
+
+ [:duct.migrator.ragtime/sql :vtfeed.migration/tags]
+ {:up ["CREATE TABLE tags (
+          value    varchar PRIMARY KEY
+        );"]
+  :down ["DROP TABLE tags;"]}
+
+ [:duct.migrator.ragtime/sql :vtfeed.migration/tagged-subscriptions]
+ {:up ["CREATE TABLE tagged_subscriptions (
+          subscription_id    varchar NOT NULL,
+          value              varchar NOT NULL
+        );"]
+  :down ["DROP TABLE tagged_subscriptions;"]}
+
+ :duct.module/ataraxy
+ {[:get "/example"] [:example]
+  "/subscriptions"
+  {[:post {subscription :body-params}]       [:subscription/create subscription]
+   [:get]                                    [:subscription/list]
+   ["/" subscription-id]
+   {[:delete] [:subscription/delete subscription-id]
+    [:get]    [:subscription/get    subscription-id]}}}
+
+
+ :vtfeed.handler/example              {:db #ig/ref :duct.database/sql}
+ :vtfeed.handler.subscription/create  {:db #ig/ref :duct.database/sql}
+ :vtfeed.handler.subscription/list    {:db #ig/ref :duct.database/sql}
+ :vtfeed.handler.subscription/delete  {:db #ig/ref :duct.database/sql}
+ :vtfeed.handler.subscription/get     {:db #ig/ref :duct.database/sql}}
