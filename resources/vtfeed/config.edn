@@ -50,7 +50,6 @@
  :vtfeed.handler.subscription/list    {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.subscription/delete  {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.subscription/get     {:db #ig/ref :duct.database/sql}
- :org.elasticsarch.client/create 
  ;:vtfeed.job/channel {}
  ;:vtfeed.job/hello {:ch #ig/ref :vtfeed.job/channel}
  }
