@@ -1,0 +1,42 @@
+{
+ "kind": "youtube#channelListResponse",
+ "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/-hiwEacuf25cg8Ob4NXiDysYn7s\"",
+ "pageInfo": {
+  "totalResults": 1,
+  "resultsPerPage": 1
+ },
+ "items": [
+  {
+   "kind": "youtube#channel",
+   "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/eNjaNOnv68tTglld9V7GYO03aSM\"",
+   "id": "UCp6993wxpyDPHUpavwDFqgg",
+   "snippet": {
+    "title": "SoraCh. ときのそらチャンネル",
+    "description": "はじめまして！バーチャルYoutuberJKのときのそらです(๑•̀ㅁ•́๑)✧\n生放送(ライブ配信)を中心に活動しています！でもYouTuberにもなっちゃいます！\n\nぜひぜひチャンネル登録をお願いします！\nもちろん、生放送でのコメントもお待ちしてますよ(๑•̀ㅂ•́)و✧\n\nわたしの動画、翻訳をしていただけるとうれしいです:;(∩ ˘ω˘ ∩);:\nでもわたしは日本語も危ういので、内容のチェックはできないのです:;(∩ ˘ω˘ ∩);:\nなので、そらともを信じて、待ってます:;(∩ ˘ω˘ ∩);:\nhttp://www.youtube.com/timedtext_cs_panel?c=UCp6993wxpyDPHUpavwDFqgg&tab=2\n\n-------------------------------------------------------------------------------\nおたよりやリクエストを送ってくれてもいいんですよ(๑•̀ㅂ•́)و✧ﾖﾛｺﾋﾞﾏｽ!!\nhttps://goo.gl/uHd8sg\n\nTwitterフォローもいかがですかね！？(๑•̀ㅂ•́)و✧\nhttps://twitter.com/tokino_sora\n\n17Liveのフォローもいかがですかね！？(๑•̀ㅂ•́)و✧\nhttps://17.live/live/312448\n\nニコニコ動画もいかがですかね！？(๑•̀ㅂ•́)و✧\nhttp://ch.nicovideo.jp/majica\n\nいっそ私と一緒に活動しますか！？(๑´ڡ`๑)\nhttps://twitter.com/hololivetv\n\n\n[お詫び] 生放送アーカイブ、003と005は録画に失敗したためアップロードしていません!!(; _ ;)ｺﾞﾒﾝﾈ\n\n[Sounds] ポケットサウンド,DOVA-SYNDROME,魔王魂,Music is VFR\n[System] HoloLive (COVER Inc.)",
+    "publishedAt": "2017-09-07T03:02:42.000Z",
+    "thumbnails": {
+     "default": {
+      "url": "https://yt3.ggpht.com/-U7D3_baYV8I/AAAAAAAAAAI/AAAAAAAAAAA/sUxq7rV1_ak/s88-c-k-no-mo-rj-c0xffffff/photo.jpg",
+      "width": 88,
+      "height": 88
+     },
+     "medium": {
+      "url": "https://yt3.ggpht.com/-U7D3_baYV8I/AAAAAAAAAAI/AAAAAAAAAAA/sUxq7rV1_ak/s240-c-k-no-mo-rj-c0xffffff/photo.jpg",
+      "width": 240,
+      "height": 240
+     },
+     "high": {
+      "url": "https://yt3.ggpht.com/-U7D3_baYV8I/AAAAAAAAAAI/AAAAAAAAAAA/sUxq7rV1_ak/s800-c-k-no-mo-rj-c0xffffff/photo.jpg",
+      "width": 800,
+      "height": 800
+     }
+    },
+    "localized": {
+     "title": "SoraCh. ときのそらチャンネル",
+     "description": "はじめまして！バーチャルYoutuberJKのときのそらです(๑•̀ㅁ•́๑)✧\n生放送(ライブ配信)を中心に活動しています！でもYouTuberにもなっちゃいます！\n\nぜひぜひチャンネル登録をお願いします！\nもちろん、生放送でのコメントもお待ちしてますよ(๑•̀ㅂ•́)و✧\n\nわたしの動画、翻訳をしていただけるとうれしいです:;(∩ ˘ω˘ ∩);:\nでもわたしは日本語も危ういので、内容のチェックはできないのです:;(∩ ˘ω˘ ∩);:\nなので、そらともを信じて、待ってます:;(∩ ˘ω˘ ∩);:\nhttp://www.youtube.com/timedtext_cs_panel?c=UCp6993wxpyDPHUpavwDFqgg&tab=2\n\n-------------------------------------------------------------------------------\nおたよりやリクエストを送ってくれてもいいんですよ(๑•̀ㅂ•́)و✧ﾖﾛｺﾋﾞﾏｽ!!\nhttps://goo.gl/uHd8sg\n\nTwitterフォローもいかがですかね！？(๑•̀ㅂ•́)و✧\nhttps://twitter.com/tokino_sora\n\n17Liveのフォローもいかがですかね！？(๑•̀ㅂ•́)و✧\nhttps://17.live/live/312448\n\nニコニコ動画もいかがですかね！？(๑•̀ㅂ•́)و✧\nhttp://ch.nicovideo.jp/majica\n\nいっそ私と一緒に活動しますか！？(๑´ڡ`๑)\nhttps://twitter.com/hololivetv\n\n\n[お詫び] 生放送アーカイブ、003と005は録画に失敗したためアップロードしていません!!(; _ ;)ｺﾞﾒﾝﾈ\n\n[Sounds] ポケットサウンド,DOVA-SYNDROME,魔王魂,Music is VFR\n[System] HoloLive (COVER Inc.)"
+    },
+    "country": "JP"
+   }
+  }
+ ]
+}

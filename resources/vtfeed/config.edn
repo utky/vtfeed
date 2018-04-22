@@ -14,21 +14,24 @@
 
  [:duct.migrator.ragtime/sql :vtfeed.migration/subscriptions]
  {:up ["CREATE TABLE subscriptions (
-          id    varchar PRIMARY KEY,
-          name  varchar(255)
+          id      text PRIMARY KEY,
+          name    text NOT NULL,
+          url     text NOT NULL,
+          created timestamp default CURRENT_TIMESTAMP,
+          last    timestamp default CURRENT_TIMESTAMP
         );"]
   :down ["DROP TABLE subscriptions;"]}
 
  [:duct.migrator.ragtime/sql :vtfeed.migration/tags]
  {:up ["CREATE TABLE tags (
-          value    varchar PRIMARY KEY
+          value    text PRIMARY KEY
         );"]
   :down ["DROP TABLE tags;"]}
 
  [:duct.migrator.ragtime/sql :vtfeed.migration/tagged-subscriptions]
  {:up ["CREATE TABLE tagged_subscriptions (
-          subscription_id    varchar NOT NULL,
-          value              varchar NOT NULL
+          subscription_id    text NOT NULL,
+          value              text NOT NULL
         );"]
   :down ["DROP TABLE tagged_subscriptions;"]}
 
@@ -46,4 +49,8 @@
  :vtfeed.handler.subscription/create  {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.subscription/list    {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.subscription/delete  {:db #ig/ref :duct.database/sql}
- :vtfeed.handler.subscription/get     {:db #ig/ref :duct.database/sql}}
+ :vtfeed.handler.subscription/get     {:db #ig/ref :duct.database/sql}
+ :org.elasticsarch.client/create 
+ ;:vtfeed.job/channel {}
+ ;:vtfeed.job/hello {:ch #ig/ref :vtfeed.job/channel}
+ }

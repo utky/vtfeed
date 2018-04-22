@@ -1,0 +1,182 @@
+{
+ "kind": "youtube#activityListResponse",
+ "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/IXnfg4A5OB8kS68gGEfm6GD7uHM\"",
+ "nextPageToken": "CAUQAA",
+ "pageInfo": {
+  "totalResults": 12,
+  "resultsPerPage": 5
+ },
+ "items": [
+  {
+   "kind": "youtube#activity",
+   "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/7VFrguxs4QzQbjrkT_t6D7vaDpE\"",
+   "id": "VTE1MjQyMDMxNTI5NDA4NTEzODE5Mjg0OA==",
+   "snippet": {
+    "publishedAt": "2018-04-20T05:45:52.000Z",
+    "channelId": "UCD-miitqNY3nyukJ4Fnf4_A",
+    "title": "【月ノ美兎・樋口楓・静凛】JK組お花見配信【後編】",
+    "description": "2018/04/14　生放送分 後編\n\nコーナー\n~前編~\n①JK組に質問！\n②絵描き歌のコーナー\n~後編~\n③JK組を◯◯に例えて見た！\n④クソザコイングリッシュバトル",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/WjVrE-VQawk/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/WjVrE-VQawk/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/WjVrE-VQawk/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     },
+     "standard": {
+      "url": "https://i.ytimg.com/vi/WjVrE-VQawk/sddefault.jpg",
+      "width": 640,
+      "height": 480
+     },
+     "maxres": {
+      "url": "https://i.ytimg.com/vi/WjVrE-VQawk/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720
+     }
+    },
+    "channelTitle": "月ノ美兎",
+    "type": "upload"
+   }
+  },
+  {
+   "kind": "youtube#activity",
+   "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/ioyBxSi7TjjzPuIGqt6HAdQW5hE\"",
+   "id": "VTE1MjQyMDMxMDA5NDA4NTEzODE5MDU0NA==",
+   "snippet": {
+    "publishedAt": "2018-04-20T05:45:00.000Z",
+    "channelId": "UCD-miitqNY3nyukJ4Fnf4_A",
+    "title": "【月ノ美兎・樋口楓・静凛】JK組お花見配信【前編】",
+    "description": "2018/04/14　生放送分 前編\n一部お聞き苦しい箇所があり申し訳ありません！\n\nコーナー\n~前編~\n①JK組に質問！\n②絵描き歌のコーナー\n~後編~\n③JK組を◯◯に例えて見た！\n④クソザコイングリッシュバトル\n\n月ノ美兎・樋口楓・静凛",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/OFELMaAYfjE/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/OFELMaAYfjE/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/OFELMaAYfjE/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     },
+     "standard": {
+      "url": "https://i.ytimg.com/vi/OFELMaAYfjE/sddefault.jpg",
+      "width": 640,
+      "height": 480
+     },
+     "maxres": {
+      "url": "https://i.ytimg.com/vi/OFELMaAYfjE/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720
+     }
+    },
+    "channelTitle": "月ノ美兎",
+    "type": "upload"
+   }
+  },
+  {
+   "kind": "youtube#activity",
+   "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/XSQui78YxFi_T0hoIuBLa9Iacm0\"",
+   "id": "VTE1MjMzNjkwMDE5NDA4NTEzODE5MzgwOA==",
+   "snippet": {
+    "publishedAt": "2018-04-10T14:03:21.000Z",
+    "channelId": "UCD-miitqNY3nyukJ4Fnf4_A",
+    "title": "月ノ美兎の公式ニコ生反省会【雑談】",
+    "description": "とっても楽しかったです\n\n↓放送関連のツイートはこちらのタグをつけていただければ嬉しいです！\n#みとの生放送\n\n【にじさんじ公式】",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/ZsQ0gMxJlA8/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/ZsQ0gMxJlA8/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/ZsQ0gMxJlA8/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     }
+    },
+    "channelTitle": "月ノ美兎",
+    "type": "upload"
+   }
+  },
+  {
+   "kind": "youtube#activity",
+   "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/flcLOm3hhHW-eHrQP_Z79bNJCY8\"",
+   "id": "VTE1MjI1NjM4ODg5NDA4NTE5ODY5MTQwOA==",
+   "snippet": {
+    "publishedAt": "2018-04-01T06:24:48.000Z",
+    "channelId": "UCD-miitqNY3nyukJ4Fnf4_A",
+    "title": "かかったな？",
+    "description": "エイプリルフールだから許してください\n\n↓遊ばせていただいたゲーム\n\nMad Boss\nhttps://www.crazygames.com/gameframe/mad-boss\n\n辺境の村に住む住人をスナイプする射撃ゲーム\nhttp://tps.game-tansaku.net/gunshooting/aim/page4149/\n\n↓放送関連のツイートはこちらのタグをつけていただければ嬉しいです！\n#ヘアピンの生放送\n\n【にじさんじ公式】",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/tw4MSU90Ru0/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/tw4MSU90Ru0/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/tw4MSU90Ru0/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     }
+    },
+    "channelTitle": "月ノ美兎",
+    "type": "upload"
+   }
+  },
+  {
+   "kind": "youtube#activity",
+   "etag": "\"ZG3FIn5B5vcHjQiQ9nDOCWdxwWo/UjnZ7bVR3FkyDXaxbcsAI6T4WMk\"",
+   "id": "VTE1MjI0MjY2NDY5NDA4NTE5ODY5MTYwMA==",
+   "snippet": {
+    "publishedAt": "2018-03-30T16:17:26.000Z",
+    "channelId": "UCD-miitqNY3nyukJ4Fnf4_A",
+    "title": "月ノ美兎の特注ゲーム＆雑談会",
+    "description": "2018/3/29 生放送アーカイブ\n\n00:00~ くそざこむかでたいじ\n              https://t.co/liOPUH9n03\n04:18~ 委員長メーカー\n              https://www.raiden502.com/souko/mito/\n07:27~ 委員長とクソザコイングリッシュのお勉強\n　　　  https://efkefk.github.io/efkefk/\n19:53~ 雑談タイム\n　　　（インターネット老人会）\n\n【にじさんじ公式】",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/O__lKvdMtnE/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/O__lKvdMtnE/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/O__lKvdMtnE/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     }
+    },
+    "channelTitle": "月ノ美兎",
+    "type": "upload"
+   }
+  }
+ ]
+}
+

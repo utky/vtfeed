@@ -85,6 +85,28 @@ But you can also run tests through Leiningen.
 lein test
 ```
 
+## Design Doc
+
+### Invloved components
+
+vtfeed mainly communicates with 3 sub systems.
+
+* Youtube API v3
+* PostgreSQL
+* Elasticsearch
+
+### Youtube API v3
+
+Primary data source of vtfeed
+
+### Postgres
+
+
+### Elasticsearch
+
+ES stores feed
+
 ## Legal
 
 Copyright © 2018 FIXME
+

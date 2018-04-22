@@ -36,9 +36,13 @@
 (def db-name
   "vtfeed")
 
+(def db-image
+  "postgres:10.3")
+
 (defn run-db
   []
-  (shell/sh "docker" "run" "-d" "--name" db-name "-p" "5432:5432" "postgres"))
+  (shell/sh "docker" "run" "-d" "--name" db-name
+            "-p" "5432:5432" db-image))
 
 (defn start-db
   []
@@ -47,6 +51,30 @@
 (defn stop-db
   []
   (shell/sh "docker" "stop" db-name))
+
+
+(def es-name
+  "vtfeed-es")
+
+(def es-image
+  "docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4")
+
+(defn run-es
+  []
+  (shell/sh "docker" "run" "-d" "--name" es-name
+            "-p" "9200:9200"
+            "-p" "9300:9300"
+            "-e" "\"discovery.type=single-node\""
+            es-image))
+
+(defn start-es
+  []
+  (shell/sh "docker" "start" es-name))
+
+(defn stop-es
+  []
+  (shell/sh "docker" "stop" es-name))
+
 
 ;; ------------------------------------------------
 ;; HTTP Client

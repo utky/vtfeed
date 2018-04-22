@@ -13,7 +13,10 @@
                  [org.postgresql/postgresql "42.1.4"]
                  [honeysql "0.9.2"]
                  [http-kit "2.2.0"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [clj-time "0.14.3"]
+                 [jarohen/chime "0.2.2"]
+                 [org.elasticsearch.client/elasticsearch-rest-high-level-client "6.2.4"]]
   :plugins [[duct/lein-duct "0.10.6"]]
   :main ^:skip-aot vtfeed.main
   :uberjar-name  "vtfeed-standalone.jar"
@@ -25,7 +28,7 @@
           :repl-options {:init-ns user
                          :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
    :uberjar {:aot :all}
-   :profiles/dev {}
+   :profiles/dev {:dependencies   [[org.clojure/test.check "0.9.0"]]}
    :project/dev  {:source-paths   ["dev/src"]
                   :resource-paths ["dev/resources"]
                   :dependencies   [[integrant/repl "0.2.0"]
