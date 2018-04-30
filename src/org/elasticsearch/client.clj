@@ -1,43 +1,70 @@
 (ns org.elasticsearch.client
   (:require [integrant.core :as ig]
-            [vtfeed.core.feed :as feed]
+            [vtfeed.core.feed :refer [FeedSchema FeedClient] :as feed]
             [clojure.data.json :as json])
   (:import (org.elasticsearch.client RestClient
                                      RestHighLevelClient)
-           (org.apache.http HttpHost)))
+           (org.elasticsearch.client Requests)
+           (org.elasticsearch.action.admin.indices.create CreateIndexRequest)
+           (org.elasticsearch.action.admin.indices.mapping.put PutMappingRequest)
+           (org.elasticsearch.common.xcontent XContentType)
+           (org.elasticsearch.action.index IndexRequest)
+           (org.elasticsearch.action.bulk BulkRequest)
+           (org.elasticsearch.index.query RangeQueryBuilder)
+           (org.elasticsearch.search.builder SearchSourceBuilder)
+           (org.elasticsearch.action.search SearchRequest)
+           (org.apache.http HttpHost Header)))
+
+(comment
+  " Start here
+https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-high-level-client/6.2.4/org/elasticsearch/client/RestHighLevelClient.html
+")
 
 (def defualt-mapping
   {})
 
-(defn- create-index
-  [client defs]
-  (let [schema  (:name defs)
-        req     (.. (GetIndexRequest.) (.indices schema))
-        exists  (.. client (.indices) (.exists req))]
-    (when-not exists
-      (let [req-idx      (CreateIndexRequest. schema)
-            res-create   (.create client req-idx)
-            mapping-json (-> defs
-                             (dissoc :name)
-                             (json/write-str))
-            req-map      (.. (PutMappingRequest. schema)
-                             (.source mapping-json XContentType/JSON))
-            res-mapping  (.putMapping client req-map)]
-        res-mpping))))
+(def empty-headers
+  (make-array Header 0))
 
-(defn- feed->index-req
-  [schema feed]
-  (.. (IndexRequest. schema)
-      (.source (json/write-str feed) XContentType/JSON)))
+(defn exist-index
+  [client index]
+  (let [llc  (.getLowLevelClient client)
+        res-read (.performRequest llc
+                                  "HEAD"
+                                  (str "/" index)
+                                  (java.util.Collections/emptyMap)
+                                  empty-headers)
+        status-code (.. res-read (getStatusLine) (getStatusCode))]
+    (= 200 status-code)))
 
-(defn- create-feeds
-  [client schema feeds]
-  (let [each-reqs (map (partial feed->index-req schema) feeds)
+(defn create-index
+  [client index]
+  (let [req-idx      (Requests/createIndexRequest index)]
+    (.. client indices (create req-idx empty-headers))))
+
+(defn delete-index
+  [client index]
+  (let [req-idx      (Requests/deleteIndexRequest index)]
+    (.. client indices (delete req-idx empty-headers))))
+
+(defn feed->index-req
+  [index feed]
+  (let [id-value (:id feed)
+        type-value "activity"]
+    (.. (Requests/indexRequest index)
+        (id id-value)
+        (type type-value)
+        (source (json/write-str feed) XContentType/JSON))))
+
+(defn save-bulk 
+  [client index feeds]
+  (let [each-reqs (map (partial feed->index-req index) feeds)
         req       (reduce #(.add %1 %2) (BulkRequest.) each-reqs)]
     (.. client
-        (.bulk req))))
+        (bulk req empty-headers)
+        (toString))))
 
-(defn- search-feeds
+(defn search-feeds
   "time range query
   https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html
 
@@ -45,24 +72,11 @@
   "
   [client {:keys [start end tags]}]
   (let [query  (.. (RangeQueryBuilder. "publishedAt")
-                   (.from start)
-                   (.to end))
-        ssb    (.. (SearchSourceBuilder.) (.query query))
-        req    (.. (SearchRequest.) (.source ssb))]
+                   (from start)
+                   (to end))
+        ssb    (.. (SearchSourceBuilder.) (query query))
+        req    (.. (SearchRequest.) (source ssb))]
     (.search client req)))
-
-(defrecord ElasticClient [client]
-  feed/FeedSchema
-  (create-schema-if-absent
-    [this deifinitions]
-    (create-index this deifinitions))
-  feed/FeedLClient
-  (save-feeds
-    [this feeds]
-    (create-feeds this feeds))
-  (fetch-feeds
-    [this start end & tags]
-    (search-feeds this starts ends tags)))
 
 (defn http-hosts
   "expects [{:hostname \"localhost\" :port 9200 :scheme \"http\"}]"
@@ -76,8 +90,30 @@
   [hosts]
   (RestHighLevelClient. (RestClient/builder (into-array HttpHost hosts))))
 
-(defmethod ig/init-key :org.elasticsearch.client/rest-client [_ hosts]
-  (rest-client(doall (http-hosts hosts))))
+(defn make-rest-client
+  [hs]
+  (rest-client (doall (http-hosts hs))))
+
+(defmethod ig/init-key :org.elasticsearch.client/rest-client
+  [_ {:keys [endpoints index]}]
+  (let [client (make-rest-client endpoints)
+        exist  (exist-index client index)]
+    (when-not exist
+      (create-index client index))
+    client))
 
 (defmethod ig/halt-key! :org.elasticsearch.client/rest-client [_ client]
   (.close client))
+
+(comment
+  (-> [{:hostname "localhost" :port 9200 :scheme "http"}]
+      make-rest-client
+      (exist-index "tests")
+      )
+  )
+
+(comment
+  (let [c (make-rest-client [{:hostname "localhost" :port 9200 :scheme "http"}])
+        req (Requests/getRequest "test")]
+    (.ping c empty-headers))
+  )
