@@ -60,10 +60,9 @@
 ;; --------------------------------------------
 (defn- handle-subscription
   [{:keys [status headers body error]}]
-  (do (prn "status" status "error" error)
-      (if error
-        {:error error}
-        {:data  (json/read-json body true)})))
+  (if error
+    {:error error}
+    {:data  (json/read-json body true)}))
 
 (defmethod ig/init-key :vtfeed.job/collector
   [_ {:keys [subscription updates]}]
@@ -86,13 +85,13 @@
 ;; --------------------------------------------
 
 (defmethod ig/init-key :vtfeed.job/consumer
-  [_ {:keys [updates rest-client]}]
+  [_ {:keys [updates rest-client index]}]
   (a/thread
     (loop []
       (when-let [activities (a/<!! updates)]
         (if (:data activities)
           (let [resp (es/save-bulk rest-client
-                                   "index"
+                                   index
                                    (get-in activities [:data :items]))]
             (prn (.toString resp)))
           (prn "error: " activities))

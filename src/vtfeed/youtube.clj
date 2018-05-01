@@ -47,11 +47,13 @@
     :body
     (#(spit "test/tokino_sora_channels.json" %)))
 
-(-> {:channelId "UCp6993wxpyDPHUpavwDFqgg"
-     :publishedAfter "2018-04-27T00:00:00.0Z"}
-    (merge activities)
-    request
-    deref)
+(spit "tokino_sora_activities.json"
+      (-> {:channelId "UCp6993wxpyDPHUpavwDFqgg"
+           :publishedAfter "2018-04-27T00:00:00.0Z"}
+          (merge activities)
+          request
+          deref
+          :body))
 )
 
 

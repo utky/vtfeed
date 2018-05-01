@@ -52,7 +52,7 @@
  :vtfeed.handler.subscription/get     {:db #ig/ref :duct.database/sql}
 
  :org.elasticsearch.client/rest-client {:endpoints [{:hostname "localhost" :port 9200 :scheme "http"}]
-                                       :index "test"}
+                                       :index "activities"}
 
  :vtfeed.job/tick            {:seconds 20}
  :vtfeed.job/updates         {:buf-or-n 1}
@@ -63,5 +63,6 @@
  :vtfeed.job/collector       {:subscription #ig/ref :vtfeed.job/subscription
                               :updates      #ig/ref :vtfeed.job/updates}
  :vtfeed.job/consumer        {:updates      #ig/ref :vtfeed.job/updates
-                              :rest-client  #ig/ref :org.elasticsearch.client/rest-client}
+                              :rest-client  #ig/ref :org.elasticsearch.client/rest-client
+                              :index "activities"}
  }

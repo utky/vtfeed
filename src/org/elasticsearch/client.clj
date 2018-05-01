@@ -20,8 +20,32 @@
 https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-high-level-client/6.2.4/org/elasticsearch/client/RestHighLevelClient.html
 ")
 
-(def defualt-mapping
-  {})
+(def default-mapping
+  {:_doc
+   {:properties
+    {:kind         { :type "keyword" }
+     :etag         { :type "keyword" }
+     :id           { :type "keyword" }
+     :publishedAt  { :type "date" :format "strict_date_time" }
+     :channelId    { :type "keyword" }
+     :title        { :type "text" }
+     :description  { :type "text" }
+     :url          { :type "keyword" }
+     :width        { :type "integer" }
+     :height       { :type "integer" }
+     :channelTitle { :type "text" }
+     :type         { :type "keyword" }
+     :videoId      { :type "keyword" }}}})
+
+(defn normalize
+  [m]
+  (let [base              (dissoc m :snippet :contentDetails)
+        snippet           (:snippet m)
+        default-thumbnail (get-in snippet [:thumbnails :default])
+        flat-snippet      (dissoc snippet :thumbnails)
+        content-details   (get-in m [:contentDetails :upload])
+        ]
+    (merge base flat-snippet default-thumbnail content-details)))
 
 (def empty-headers
   (make-array Header 0))
@@ -39,7 +63,10 @@ https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest
 
 (defn create-index
   [client index]
-  (let [req-idx      (Requests/createIndexRequest index)]
+  (let [req-idx      (.. (Requests/createIndexRequest index)
+                         (mapping "_doc"
+                                  (json/write-str default-mapping)
+                                  XContentType/JSON))]
     (.. client indices (create req-idx empty-headers))))
 
 (defn delete-index
@@ -49,16 +76,24 @@ https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest
 
 (defn feed->index-req
   [index feed]
-  (let [id-value (:id feed)
-        type-value "activity"]
+  (let [id-value (:videoId feed)
+        type-value "_doc"]
     (.. (Requests/indexRequest index)
         (id id-value)
         (type type-value)
         (source (json/write-str feed) XContentType/JSON))))
 
-(defn save-bulk 
+
+(defn- only-upload
+  [feed]
+  (= "upload" (get-in feed [:snippet :type])))
+
+
+(defn save-bulk
   [client index feeds]
-  (let [each-reqs (map (partial feed->index-req index) feeds)
+  (let [each-reqs (map (comp (partial feed->index-req index)
+                             normalize)
+                       (filter only-upload feeds))
         req       (reduce #(.add %1 %2) (BulkRequest.) each-reqs)]
     (.. client
         (bulk req empty-headers)
