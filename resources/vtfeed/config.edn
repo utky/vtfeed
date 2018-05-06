@@ -57,12 +57,14 @@
  :vtfeed.job/tick            {:seconds 20}
  :vtfeed.job/updates         {:buf-or-n 1}
  :vtfeed.job/subscription    {:concurrency  5}
- :vtfeed.job/subscriber      {:concurrency  5
+ :vtfeed.job/subscriber      {:db           #ig/ref :duct.database/sql
+                              :concurrency  5
                               :tick         #ig/ref :vtfeed.job/tick
                               :subscription #ig/ref :vtfeed.job/subscription}
  :vtfeed.job/collector       {:subscription #ig/ref :vtfeed.job/subscription
                               :updates      #ig/ref :vtfeed.job/updates}
- :vtfeed.job/consumer        {:updates      #ig/ref :vtfeed.job/updates
+ :vtfeed.job/consumer        {:db           #ig/ref :duct.database/sql
+                              :updates      #ig/ref :vtfeed.job/updates
                               :rest-client  #ig/ref :org.elasticsearch.client/rest-client
                               :index "activities"}
  }

@@ -5,7 +5,8 @@
             [honeysql.helpers :refer :all :as helpers]
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
-            [clj-time.core :as t]))
+            [clj-time.core :as t]
+            [clj-time.jdbc]))
 
 (defn- kebab [col]
   (-> col string/lower-case (string/replace "_" "-")))
@@ -16,7 +17,8 @@
   (delete-subscription [db subscription-id])
   (list-subscription [db])
   (get-subscription [db subscription-id])
-  (update-subscription-last [db subscription-id]))
+  (update-subscription-last [db subscription-id last])
+  (list-next-subscription [db limit]))
 
 (extend-protocol Subscription
   duct.database.sql.Boundary
@@ -48,10 +50,20 @@
                                       :where [:= :id subscription-id])
                            sql/format)
                        :identifiers kebab)))
-  (update-subscription-last [db subscription-id]
+
+  (update-subscription-last [db subscription-id lst]
     (jdbc/execute! (:spec db)
                    (-> (update :subscriptions)
-                       (sset {:last (t/now)})
+                       (sset {:last lst})
                        (where [:= :id subscription-id])
-                       ))))
+                       )))
+
+  (list-next-subscription [db limit]
+    (jdbc/query (:spec db)
+                (-> (sql/build :select :*
+                               :from :subscriptions
+                               :limit limit
+                               :order-by [[:last :asc]])
+                    sql/format)
+                :identifiers kebab)))
 

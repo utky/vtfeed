@@ -54,10 +54,7 @@
           request
           deref
           :body))
-)
 
-
-(comment
 (-> (slurp "test/tokino_sora_activities.json")
     (json/read-json true)
     :items

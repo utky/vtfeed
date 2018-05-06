@@ -94,10 +94,12 @@ https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest
   (let [each-reqs (map (comp (partial feed->index-req index)
                              normalize)
                        (filter only-upload feeds))
-        req       (reduce #(.add %1 %2) (BulkRequest.) each-reqs)]
-    (.. client
-        (bulk req empty-headers)
-        (toString))))
+        req       (reduce #(.add %1 %2) (BulkRequest.) each-reqs)
+        res       (.. client
+                      (bulk req empty-headers)
+                      status)]
+    (prn "bulk response : " (.status res))
+    (= org.elasticsearch.rest.RestStatus/OK (.status res))))
 
 (defn search-feeds
   "time range query
