@@ -5,10 +5,10 @@
             [integrant.core :as ig]
             [vtfeed.boundary.subscription :as boundary]))
 
-(extend-protocol cheshire.generate/JSONable
-  org.joda.time.DateTime
-  (to-json [dt gen]
-    (cheshire.generate/write-string gen (str dt))))
+;(extend-protocol cheshire.generate/JSONable
+;  org.joda.time.DateTime
+;  (to-json [dt gen]
+;    (cheshire.generate/write-string gen (str dt))))
 
 ;; id, name, url are needed
 (defmethod ig/init-key :vtfeed.handler.subscription/create [_ {:keys [db]}]

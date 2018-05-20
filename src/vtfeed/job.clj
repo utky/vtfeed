@@ -49,12 +49,12 @@
 
 ;; A) fetch target subscriptions to be updated
 ;; --------------------------------------------
+
 (defmethod ig/init-key :vtfeed.job/subscriber
   [_ {:keys [db concurrency tick subscription]}]
   (a/thread
     (loop []
       (when-let [time (a/<!! tick)]
-        (prn "tick " time)
         (letfn [(send-next-subscription
                   [sub]
                   (prn "send-next-subscription " sub)

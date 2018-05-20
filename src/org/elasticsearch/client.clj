@@ -20,6 +20,15 @@
 https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-high-level-client/6.2.4/org/elasticsearch/client/RestHighLevelClient.html
 ")
 
+(defprotocol IndiceClient
+  (index-exist? [this index])
+  (index-create [this index])
+  (index-delete [this index]))
+
+(defprotocol DocumentClient
+  (bulk [this requests])
+  (search [this query]))
+
 (def default-mapping
   {:_doc
    {:properties

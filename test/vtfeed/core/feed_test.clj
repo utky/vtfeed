@@ -36,8 +36,7 @@
   ::url (io/as-url "http://localhost/")
   ::thumbnail (io/as-url "http://localhost")})
 
-(t/deftest test-url?
-  (t/testing "valid URL"
+(t/deftest test-url? (t/testing "valid URL"
     (t/are [x] (url? x)
       (java.net.URL. "http://exampl.com")))
   (t/testing "invalid URL"
