@@ -3,7 +3,8 @@
 
  :duct.module/logging {}
  :duct.module.web/api {}
- :duct.module.vtfeed/web {}
+ :duct.middleware.web/defaults {:static {:resources ["duct/module/web/public"
+                                                     "vtfeed/public"]}}
  :duct.module/sql {}
  :duct.module/cljs {:main vtfeed.client}
 
@@ -37,8 +38,7 @@
   :down ["DROP TABLE tagged_subscriptions;"]}
 
  :duct.module/ataraxy
- {[:get "/"] [:index]
-  "/subscriptions"
+ {"/subscriptions"
   {[:post {subscription :body-params}]       [:subscription/create subscription]
    [:get]                                    [:subscription/list]
    ["/" subscription-id]
@@ -46,7 +46,6 @@
     [:get]    [:subscription/get    subscription-id]}}}
 
 
- :vtfeed.handler/index                {}
  :vtfeed.handler.subscription/create  {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.subscription/list    {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.subscription/delete  {:db #ig/ref :duct.database/sql}
