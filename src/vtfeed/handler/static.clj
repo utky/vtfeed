@@ -1,4 +1,4 @@
-(ns vtfeed.handler.index
+(ns vtfeed.handler.static
   (:require [ataraxy.core :as ataraxy]
             [ataraxy.response :as response] 
             [ring.util.response :as ring]
@@ -21,7 +21,7 @@
 </body>
 </html>")
 
-(defmethod ig/init-key :vtfeed.handler/index [_ options]
+(defmethod ig/init-key :vtfeed.handler.static/index [_ options]
   (fn [{[_] :ataraxy/result}]
     (-> {:status 200
          :body body-template}
