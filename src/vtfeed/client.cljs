@@ -16,7 +16,7 @@
 ;; Call the dispatching function every second.
 ;; `defonce` is like `def` but it ensures only one instance is ever
 ;; created in the face of figwheel hot-reloading of this file.
-(defonce do-timer (js/setInterval dispatch-timer-event 1000))
+(defonce do-timer (js/setInterval dispatch-timer-event 60000))
 
 
 ;; -- Domino 2 - Event Handlers -----------------------------------------------
@@ -25,13 +25,19 @@
   :initialize                 ;; usage:  (dispatch [:initialize])
   (fn [_ _]                   ;; the two parameters are not important here, so use _
     {:time (js/Date.)         ;; What it returns becomes the new application state
-     :time-color "#f88"}))    ;; so the application state will initially be a map with two keys
+     :feeds []
+     :subscription ""}))
 
 
-(rf/reg-event-db                ;; usage:  (dispatch [:time-color-change 34562])
-  :time-color-change            ;; dispatched when the user enters a new colour into the UI text field
-  (fn [db [_ new-color-value]]  ;; -db event handlers given 2 parameters:  current application state and event (a vector)
-    (assoc db :time-color new-color-value)))   ;; compute and return the new application state
+(rf/reg-event-db
+  :subscription-change
+  (fn [db [_ value]]
+    (assoc db :subscription value)))   ;; compute and return the new application state
+
+(rf/reg-event-db
+ :subscription-add
+ (fn [db [_ value]]
+   db))
 
 
 (rf/reg-event-db                 ;; usage:  (dispatch [:timer a-js-Date])
@@ -52,32 +58,61 @@
   (fn [db _]
     (:time-color db)))
 
+(rf/reg-sub
+ :feeds
+ (fn [db _]
+   (:feeds db)))
+
+(rf/reg-sub
+ :subscription
+ (fn [db _]
+   (:subscription db)))
 
 ;; -- Domino 5 - View Functions ----------------------------------------------
 
 (defn clock
   []
-  [:div.example-clock
-   {:style {:color @(rf/subscribe [:time-color])}}
+  [:div
    (-> @(rf/subscribe [:time])
        .toTimeString
        (str/split " ")
        first)])
 
-(defn color-input
+(defn add-subscription
   []
-  [:div.color-input
-   "Time color: "
+  [:div
+   "Channel ID: "
    [:input {:type "text"
-            :value @(rf/subscribe [:time-color])
-            :on-change #(rf/dispatch [:time-color-change (-> % .-target .-value)])}]])  ;; <---
+            :value @(rf/subscribe [:subscription])
+            :on-change #(rf/dispatch [:subscription-change (-> % .-target .-value)])}]
+   [:input {:type "button"
+            :value "+"
+            :on-click #(rf/dispatch [:subscription-add (fn [e] @(rf/subscribe [:subscription]))])}]])
+
+(defn feed-entry
+  [feed]
+  [:li
+   [:div.feed
+    [:div.feed-header
+     (:channel feed)]
+    [:div.feed-body
+     (:title feed)
+     (:url feed)]
+    [:div.feed-footer
+     (:published feed)]]])
+
+(defn feed-list
+  []
+  [:ul
+   (for [feed @(rf/subscribe [:feeds])]
+     ^{:key (:id feed)} (feed-entry feed))])
 
 (defn ui
   []
   [:div
-   [:h1 "Hello world, it is now"]
+   [add-subscription]
    [clock]
-   [color-input]])
+   [feed-list]])
 
 ;; -- Entry Point -------------------------------------------------------------
 

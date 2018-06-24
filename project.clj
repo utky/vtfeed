@@ -16,7 +16,6 @@
                  [org.clojure/data.json "0.2.6"]
                  [clj-time "0.14.3"]
                  [jarohen/chime "0.2.2"]
-                 [org.elasticsearch.client/elasticsearch-rest-high-level-client "6.2.4"]
                  [reagent "0.7.0"]
                  [re-frame "0.10.5"]]
   :plugins [[duct/lein-duct "0.10.6"]]

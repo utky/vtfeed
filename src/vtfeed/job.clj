@@ -5,9 +5,8 @@
             [clj-time.core :as time]
             [clj-time.periodic :as periodic]
             [vtfeed.youtube :as youtube]
-            [org.elasticsearch.client :as es]
-            [clojure.data.json :as json]
-            [vtfeed.boundary.subscription :as boundary]))
+            [vtfeed.boundary.subscription :as subscription]
+            [vtfeed.boundary.feed :as feed]))
 
 ;; 1. clock generator
 ;; tick event emitter
@@ -50,23 +49,26 @@
 ;; A) fetch target subscriptions to be updated
 ;; --------------------------------------------
 
+(defn run-subscriber
+  [{:keys [db time limit]}]
+  (letfn [(update-last-of-subscription
+            [sub]
+            (prn "update-last-of-subscription " sub)
+            (prn "last updated: " (:last sub))
+            (prn "now updated: " time)
+            (subscription/update-subscription-last db (:id sub) time)
+            sub)]
+    (->> (subscription/list-next-subscription db limit)
+         (map update-last-of-subscription))))
+
 (defmethod ig/init-key :vtfeed.job/subscriber
   [_ {:keys [db concurrency tick subscription]}]
   (a/thread
     (loop []
       (when-let [time (a/<!! tick)]
-        (letfn [(send-next-subscription
-                  [sub]
-                  (prn "send-next-subscription " sub)
-                  (do (a/>!! subscription sub)
-                      sub))
-                (update-last-of-subscription
-                  [sub]
-                  (prn "update-last-of-subscription " sub)
-                  (boundary/update-subscription-last db (:id sub) time))]
-          (->> (doall (boundary/list-next-subscription db concurrency))
-               (map send-next-subscription)
-               (map update-last-of-subscription)))
+        (let [subs (run-subscriber {:db db :time time :limit concurrency})]
+          (prn "subscriber : " subs)
+          (doall (map (fn [sub] (a/>!! subscription sub)) subs)))
         (recur)))))
 
 ;; B) fetch actual updates from remote endpoint
@@ -77,41 +79,39 @@
   (if error
     {:error error
      :subscription subscription}
-    {:data  (json/read-json body true)
+    {:data  (youtube/read-feed body)
      :subscription subscription}))
+
+(defn handle-fetch
+  [resp]
+  (if-let [body (:body resp)]
+    (update resp :body youtube/read-feed)
+    resp))
+
+(defn run-collector
+  [sub]
+  (-> (youtube/fetch-feed (:id sub))
+      deref
+      handle-fetch))
 
 (defmethod ig/init-key :vtfeed.job/collector
   [_ {:keys [subscription updates]}]
   (a/thread
     (loop []
       (when-let [s (a/<!! subscription)]
-        (letfn [(send-or-skip
-                  [result]
-                  (when-not (empty? (get-in result [:data :items]))
-                    (a/>!! updates result)))]
-          (-> {:channelId      (:id s)
-               :publishedAfter (:last s)}
-              (merge youtube/activities)
-              youtube/request
-              deref
-              (handle-subscription s)
-              (send-or-skip)))
+        (let [response (run-collector s)]
+          (if-let [err (:error response)]
+            (prn err)
+            (a/>!! updates (:body response))))
         (recur)))))
 
 ;; C) forward subscribed data to somewhereesle
 ;; --------------------------------------------
 
 (defmethod ig/init-key :vtfeed.job/consumer
-  [_ {:keys [db updates rest-client index]}]
+  [_ {:keys [db updates]}]
   (a/thread
     (loop []
-      (when-let [activities (a/<!! updates)]
-        (if (:data activities)
-          (when-let [saved? (es/save-bulk rest-client
-                                        index
-                                        (get-in activities [:data :items]))]
-            (boundary/update-subscription-last db
-                                      (get-in activities [:subscription :id])
-                                      (get-in activities [:subscription :last])))
-          (prn "error: " activities))
+      (when-let [feeds (a/<!! updates)]
+        (doall (map (partial feed/save-feed db) feeds))
         (recur)))))

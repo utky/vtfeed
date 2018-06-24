@@ -6,10 +6,8 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
             [clj-time.core :as t]
-            [clj-time.jdbc]))
-
-(defn- kebab [col]
-  (-> col string/lower-case (string/replace "_" "-")))
+            [clj-time.jdbc]
+            [vtfeed.boundary.core :as core]))
 
 ; Access point from handler to external effect
 (defprotocol Subscription
@@ -23,47 +21,42 @@
 (extend-protocol Subscription
   duct.database.sql.Boundary
   (create-subscription [db subscription]
-    (jdbc/execute! (:spec db)
+    (core/execute! db
                    (-> (insert-into :subscriptions)
                        (values [subscription])
-                       sql/format)
-                   :identifiers kebab))
+                       sql/format)))
 
   (delete-subscription [db subscription-id]
-    (jdbc/execute! (:spec db)
+    (core/execute! db
                    (-> (delete-from :subscriptions)
                        (where [:= :id subscription-id])
-                       sql/format)
-                   :identifiers kebab))
+                       sql/format)))
 
   (list-subscription [db]
-    (jdbc/query (:spec db)
+    (core/query db
                 (-> (sql/build :select :*
                                :from :subscriptions)
-                    sql/format)
-                :identifiers kebab))
+                    sql/format)))
 
   (get-subscription [db subscription-id]
-    (first (jdbc/query (:spec db)
+    (first (core/query db
                        (-> (sql/build :select :*
                                       :from :subscriptions
                                       :where [:= :id subscription-id])
-                           sql/format)
-                       :identifiers kebab)))
+                           sql/format))))
 
   (update-subscription-last [db subscription-id lst]
-    (jdbc/execute! (:spec db)
+    (core/execute! db
                    (-> (update :subscriptions)
                        (sset {:last lst})
                        (where [:= :id subscription-id])
-                       )))
+                       sql/format)))
 
   (list-next-subscription [db limit]
-    (jdbc/query (:spec db)
+    (core/query db
                 (-> (sql/build :select :*
                                :from :subscriptions
                                :limit limit
                                :order-by [[:last :asc]])
-                    sql/format)
-                :identifiers kebab)))
+                    sql/format))))
 

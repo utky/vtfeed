@@ -4,6 +4,4 @@
  :duct.module/sql
  {:database-url "jdbc:postgresql://localhost/postgres?user=postgres"}
 
- :org.elasticsearch.client/rest-client
- [{:hostname "localhost" :port 9200 :scheme "http"}]
  }
