@@ -57,7 +57,8 @@
   :down ["DROP TABLE tagged_subscriptions;"]}
 
  :duct.module/ataraxy
- {"/subscriptions"
+ {"/"                                        [:static/index]
+  "/subscriptions"
   {[:post {subscription :body-params}]       [:subscription/create subscription]
    [:get]                                    [:subscription/list]
    ["/" subscription-id]
@@ -69,6 +70,8 @@
   [:get #{since limit}]                      [:feed/list since limit]
   ["/" feed-id]                              {[:delete] [:feed/delete feed-id]}}}
 
+
+ :vtfeed.handler.static/index         {}
 
  :vtfeed.handler.subscription/create  {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.subscription/list    {:db #ig/ref :duct.database/sql}
