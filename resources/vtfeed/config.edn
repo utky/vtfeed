@@ -67,7 +67,7 @@
 
   "/feeds"
   {[:post {feed :body-params}]              [:feed/create feed]
-  [:get #{since limit}]                      [:feed/list since limit]
+  [:get #{since}]                      [:feed/list since]
   ["/" feed-id]                              {[:delete] [:feed/delete feed-id]}}}
 
 

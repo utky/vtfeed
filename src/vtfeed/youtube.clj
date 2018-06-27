@@ -38,14 +38,14 @@
 
 (defn fetch-feed
   "Fetchs and returns atom data from youtube channel"
-  [{:keys [channelId]}]
+  [{:keys [channel-id]}]
   (http/get youtube-video-feed
             {:timeout      (* 60 1000)
-             :query-params {:channel_id channelId}}))
+             :query-params {:channel_id channel-id}}))
 
 (defn read-xml-seq
   [content]
-  (-> (java.io.ByteArrayInputStream. (.geBytes content "utf-8"))
+  (-> (java.io.ByteArrayInputStream. (.getBytes content "utf-8"))
       (xml/parse)
       (xml-seq)))
 

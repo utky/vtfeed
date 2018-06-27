@@ -1,6 +1,8 @@
 (ns vtfeed.client
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
+            [day8.re-frame.http-fx]
+            [ajax.core :as ajax]
             [clojure.string :as str]))
 
 ;; A detailed walk-through of this source code is provided in the docs:
@@ -16,7 +18,7 @@
 ;; Call the dispatching function every second.
 ;; `defonce` is like `def` but it ensures only one instance is ever
 ;; created in the face of figwheel hot-reloading of this file.
-(defonce do-timer (js/setInterval dispatch-timer-event 60000))
+(defonce do-timer (js/setInterval dispatch-timer-event 10000))
 
 
 ;; -- Domino 2 - Event Handlers -----------------------------------------------
@@ -28,22 +30,57 @@
      :feeds []
      :subscription ""}))
 
-
 (rf/reg-event-db
   :subscription-change
   (fn [db [_ value]]
     (assoc db :subscription value)))   ;; compute and return the new application state
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :subscription-add
- (fn [db [_ value]]
+ (fn [{:keys [db]} [_ value]]
+   {:db (assoc db :subscription "")
+    :http-xhrio
+    {:method  :post
+     :params  {:id value :name value :url value}
+     :uri     "/subscriptions"
+     :timeout 8000
+     :format          (ajax/json-request-format)
+     :response-format (ajax/json-response-format {:keywords? true})
+     :on-success      [:subscription-add-success]
+     :on-failure      [:subscription-add-failure]}}))
+
+(rf/reg-event-db
+ :subscription-add-success
+ (fn [db _]
    db))
 
+(rf/reg-event-db
+ :subscription-add-failure
+ (fn [db _]
+   db))
 
-(rf/reg-event-db                 ;; usage:  (dispatch [:timer a-js-Date])
-  :timer                         ;; every second an event of this kind will be dispatched
-  (fn [db [_ new-time]]          ;; note how the 2nd parameter is destructured to obtain the data value
-    (assoc db :time new-time)))  ;; compute and return the new application state
+(rf/reg-event-db
+ :feed-list-success
+ (fn [db [_ resp]]
+   (assoc db :feeds (:body resp))))
+
+(rf/reg-event-db
+ :feed-list-failure
+ (fn [db _]
+   db))
+
+(rf/reg-event-fx
+  :timer
+  (fn [{:keys [db]} [_ new-time]]
+    {:db (assoc db :time new-time)
+     :http-xhrio
+     {:method  :get
+      :params  {:since (.toISOString new-time)}
+      :uri     "/feeds"
+      :timeout 8000
+      :response-format (ajax/json-response-format {:keywords? true})
+      :on-success      [:feed-list-success]
+      :on-failure      [:feed-list-failure]}}))
 
 
 ;; -- Domino 4 - Query  -------------------------------------------------------
@@ -87,7 +124,7 @@
             :on-change #(rf/dispatch [:subscription-change (-> % .-target .-value)])}]
    [:input {:type "button"
             :value "+"
-            :on-click #(rf/dispatch [:subscription-add (fn [e] @(rf/subscribe [:subscription]))])}]])
+            :on-click #(rf/dispatch [:subscription-add @(rf/subscribe [:subscription])])}]])
 
 (defn feed-entry
   [feed]
@@ -107,9 +144,14 @@
    (for [feed @(rf/subscribe [:feeds])]
      ^{:key (:id feed)} (feed-entry feed))])
 
+(defn messages
+  []
+  [:div])
+
 (defn ui
   []
   [:div
+   [messages]
    [add-subscription]
    [clock]
    [feed-list]])

@@ -6,7 +6,8 @@
             [clj-time.periodic :as periodic]
             [vtfeed.youtube :as youtube]
             [vtfeed.boundary.subscription :as subscription]
-            [vtfeed.boundary.feed :as feed]))
+            [vtfeed.boundary.feed :as feed]
+            [clojure.tools.logging :as log]))
 
 ;; 1. clock generator
 ;; tick event emitter
@@ -90,8 +91,10 @@
 
 (defn run-collector
   [sub]
-  (-> (youtube/fetch-feed (:id sub))
+  (prn "run-collector: " sub)
+  (-> (youtube/fetch-feed {:channel-id (:id sub)})
       deref
+      log/spy
       handle-fetch))
 
 (defmethod ig/init-key :vtfeed.job/collector
@@ -99,6 +102,7 @@
   (a/thread
     (loop []
       (when-let [s (a/<!! subscription)]
+        (prn "collector input: " s)
         (let [response (run-collector s)]
           (if-let [err (:error response)]
             (prn err)

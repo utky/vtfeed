@@ -17,7 +17,9 @@
                  [clj-time "0.14.3"]
                  [jarohen/chime "0.2.2"]
                  [reagent "0.7.0"]
-                 [re-frame "0.10.5"]]
+                 [re-frame "0.10.5"]
+                 [day8.re-frame/http-fx "0.1.6"]
+                 [cljs-ajax "0.7.3"]]
   :plugins [[duct/lein-duct "0.10.6"]]
   :main ^:skip-aot vtfeed.main
   :uberjar-name  "vtfeed-standalone.jar"
