@@ -3,35 +3,30 @@
             [ataraxy.response :as response] 
             [clj-time.core :as t]
             [integrant.core :as ig]
-            [vtfeed.boundary.subscription :as boundary]))
+            [vtfeed.core.subscription :as core]
+            [vtfeed.boundary.subscription :as boundary]
+            [clojure.spec.alpha :as s]))
 
-;(extend-protocol cheshire.generate/JSONable
-;  org.joda.time.DateTime
-;  (to-json [dt gen]
-;    (cheshire.generate/write-string gen (str dt))))
-
-;; id, name, url are needed
 (defmethod ig/init-key :vtfeed.handler.subscription/create [_ {:keys [db]}]
   (fn [{[_ subscription] :ataraxy/result}]
-    (do (let [created (t/now)
-              last    (t/now)
-              new-sub (-> subscription
-                          (assoc :created created)
-                          (assoc :last last))]
-          (boundary/create-subscription db new-sub))
-        [::response/ok])))
+    {:pre [(s/valid? ::core/subscription subscription)]}
+    (-> subscription
+        (assoc :created (t/now))
+        (assoc :last    (t/now))
+        (#(boundary/create-subscription db %))
+        (constantly [::response/ok]))))
 
 (defmethod ig/init-key :vtfeed.handler.subscription/list [_ {:keys [db]}]
   (fn [{[_] :ataraxy/result}]
-    (let [subscriptions (boundary/list-subscription db)]
-        [::response/ok subscriptions])))
+    [::response/ok (boundary/list-subscription db)]))
 
 (defmethod ig/init-key :vtfeed.handler.subscription/delete [_ {:keys [db]}]
   (fn [{[_ subscription-id] :ataraxy/result}]
-    (do (boundary/delete-subscription db subscription-id)
-        [::response/ok])))
+    {:pre [(s/valid? ::core/id subscription-id)]}
+    (-> (boundary/delete-subscription db subscription-id)
+        (constantly [::response/ok]))))
 
 (defmethod ig/init-key :vtfeed.handler.subscription/get [_ {:keys [db]}]
   (fn [{[_ subscription-id] :ataraxy/result}]
-    (let [subscription (boundary/get-subscription db subscription-id)]
-        [::response/ok subscription])))
+    {:pre [(s/valid? ::core/id subscription-id)]}
+    [::response/ok (boundary/get-subscription db subscription-id)]))

@@ -28,16 +28,18 @@
  {:up ["CREATE TABLE feeds (
           id           text PRIMARY KEY,
           channel_id   text NOT NULL,
+          video_id     text,
           title        text NOT NULL,
-          description  text NOT NULL,
+          description  text,
           url          text NOT NULL,
+          author_name  text NOT NULL,
+          author_uri   text NOT NULL,
           thumbnail    text NOT NULL,
           views        integer NOT NULL,
           rate_count   integer NOT NULL,
-          rate_average integer NOT NULL,
+          rate_average float NOT NULL,
           rate_min     integer NOT NULL,
           rate_max     integer NOT NULL,
-          content      text NOT NULL,
           published    timestamp default CURRENT_TIMESTAMP,
           updated      timestamp default CURRENT_TIMESTAMP
         );"]
@@ -83,7 +85,7 @@
  :vtfeed.handler.feed/delete  {:db #ig/ref :duct.database/sql}
 
  ;; Channels
- :vtfeed.job/tick            {:seconds 20}
+ :vtfeed.job/tick            {:seconds 60}
  :vtfeed.job/subscription    {:concurrency  5}
  :vtfeed.job/updates         {:buf-or-n 1}
 

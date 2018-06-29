@@ -23,12 +23,39 @@
 
 ;; -- Domino 2 - Event Handlers -----------------------------------------------
 
-(rf/reg-event-db              ;; sets up initial application state
+(defn feeds-request
+  [time]
+  {:method  :get
+   :params  {:since (.toISOString time)}
+   :uri     "/feeds"
+   :timeout 8000
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      [:feed-list-success]
+   :on-failure      [:feed-list-failure]})
+
+(rf/reg-cofx
+ :time
+ (fn [coeffects & fs]
+   (let [recv (apply comp fs)
+         now  (js/Date.)
+         changed (recv now)]
+     (assoc coeffects :time changed))))
+
+(defn yesterday
+  [d]
+  (do (.setDate d (- (.getDate d) 1))
+      d))
+
+(rf/reg-event-fx              ;; sets up initial application state
   :initialize                 ;; usage:  (dispatch [:initialize])
-  (fn [_ _]                   ;; the two parameters are not important here, so use _
-    {:time (js/Date.)         ;; What it returns becomes the new application state
-     :feeds []
-     :subscription ""}))
+  [(rf/inject-cofx :time yesterday)]
+  (fn [{time :time} _]                   ;; the two parameters are not important here, so use _
+    {:db
+     {:time (js/Date.)         ;; What it returns becomes the new application state
+      :feeds []
+      :subscription ""}
+     :http-xhrio
+     (feeds-request time)}))
 
 (rf/reg-event-db
   :subscription-change
@@ -61,8 +88,8 @@
 
 (rf/reg-event-db
  :feed-list-success
- (fn [db [_ resp]]
-   (assoc db :feeds (:body resp))))
+ (fn [db [_ feeds]]
+   (update db :feeds #(concat % feeds))))
 
 (rf/reg-event-db
  :feed-list-failure
@@ -73,14 +100,7 @@
   :timer
   (fn [{:keys [db]} [_ new-time]]
     {:db (assoc db :time new-time)
-     :http-xhrio
-     {:method  :get
-      :params  {:since (.toISOString new-time)}
-      :uri     "/feeds"
-      :timeout 8000
-      :response-format (ajax/json-response-format {:keywords? true})
-      :on-success      [:feed-list-success]
-      :on-failure      [:feed-list-failure]}}))
+     :http-xhrio (feeds-request new-time)}))
 
 
 ;; -- Domino 4 - Query  -------------------------------------------------------
@@ -128,13 +148,14 @@
 
 (defn feed-entry
   [feed]
+  ^{:key (:id feed)}
   [:li
    [:div.feed
     [:div.feed-header
-     (:channel feed)]
+     (:author_name feed)]
     [:div.feed-body
-     (:title feed)
-     (:url feed)]
+     [:a {:href (:url feed)}
+      (:title feed)]]
     [:div.feed-footer
      (:published feed)]]])
 
@@ -142,7 +163,7 @@
   []
   [:ul
    (for [feed @(rf/subscribe [:feeds])]
-     ^{:key (:id feed)} (feed-entry feed))])
+      (feed-entry feed))])
 
 (defn messages
   []

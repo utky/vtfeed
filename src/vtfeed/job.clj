@@ -74,16 +74,7 @@
 
 ;; B) fetch actual updates from remote endpoint
 ;; --------------------------------------------
-(defn- handle-subscription
-  [{:keys [status headers body error]} subscription]
-  (prn "handle subscription status: " status " subscription: " subscription)
-  (if error
-    {:error error
-     :subscription subscription}
-    {:data  (youtube/read-feed body)
-     :subscription subscription}))
-
-(defn handle-fetch
+(defn- handle-fetch
   [resp]
   (if-let [body (:body resp)]
     (update resp :body youtube/read-feed)
@@ -94,7 +85,6 @@
   (prn "run-collector: " sub)
   (-> (youtube/fetch-feed {:channel-id (:id sub)})
       deref
-      log/spy
       handle-fetch))
 
 (defmethod ig/init-key :vtfeed.job/collector

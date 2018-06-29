@@ -1,37 +1,7 @@
 (ns vtfeed.youtube
   (:require [org.httpkit.client :as http]
-            [clojure.data.json :as json]
             [clojure.xml :as xml]
-            [clojure.zip :as zip]
-            [clojure.java.io :as io]))
-
-(def youtube-v3-api-endpoint
-  "https://www.googleapis.com/youtube/v3/")
-
-(def api-key
-;;  (first (line-seq (clojure.java.io/reader "API_KEY"))))
-  (first ["hoge"]))
-
-(def channels
-  {:path "channels"
-   :part "snippet" })
-
-(def activities
-  {:path "activities"
-   :part "snippet,contentDetails"})
-
-(def default-option
-  {:timeout (* 60 1000)
-   })
-
-(defn request
-  "Returns promise of http request again youtube api"
-  [params]
-  (let [query-params (assoc (dissoc params :path) :key api-key)
-        opts (merge default-option {:query-params query-params})
-        path (:path params)
-        url (str youtube-v3-api-endpoint path)]
-    (http/get url opts)))
+            [vtfeed.core.feed :as core]))
 
 (def youtube-video-feed
   "https://www.youtube.com/feeds/videos.xml")
@@ -49,28 +19,69 @@
       (xml/parse)
       (xml-seq)))
 
-(defn entry
-  [node]
-  (let [fields [:id :title :link :author :published :updated]]
-    nil))
-
 (defn contents->map
   [col]
   (letfn [(assoc-tag
             [m {:keys [tag content attrs]}]
-            (-> m
-                (assoc tag (contents->map content))
-                (merge attrs)))
+            (let [c (contents->map content)]
+              (assoc m tag (merge attrs c))))
           (text?
             [cl]
             (and (= 1 (count cl))
                  (string? (first cl))))]
     (if (text? col)
-      (first col)
+      {:value (first col)}
       (reduce assoc-tag {} col))))
+
+(def normalize-def
+  {:id            [:id :value]
+   :channel-id    [:yt:channelId :value]
+   :video-id      [:yt:videoId :value]
+   :title         [:title :value]
+   :description   [:media:group :media:description :value]
+   :url           [:link :href]
+   :author-name   [:author :name :value]
+   :author-uri    [:author :uri :value]
+   :thumbnail     [:media:group :media:thumbnail :url]
+   :views         [:media:group :media:community :media:statistics :views]
+   :rate-count    [:media:group :media:community :media:starRating :count]
+   :rate-average  [:media:group :media:community :media:starRating :average]
+   :rate-min      [:media:group :media:community :media:starRating :min]
+   :rate-max      [:media:group :media:community :media:starRating :max]
+   :published     [:published :value]
+   :updated       [:updated :value]})
+
+(def coercion
+  {:views #(Integer/parseInt %)
+   :rate-count #(Integer/parseInt %)
+   :rate-average #(Float/parseFloat %)
+   :rate-min #(Integer/parseInt %)
+   :rate-max #(Integer/parseInt %)
+   :published core/parse-datetime
+   :updated core/parse-datetime
+   })
+
+(defn coerce
+  [m]
+  (reduce (fn
+            [m [k f]]
+            (update m k f))
+          m
+          coercion))
+
+(defn normalize
+  [m definition]
+  (letfn [(xform
+            [src dst [k f]]
+            (assoc dst k (get-in src f)))]
+    (reduce (partial xform m) {} definition)))
+
 
 (defn read-feed
   [content]
   (->> (read-xml-seq content)
        (filter #(= :entry (:tag %)))
-       (map (comp contents->map :content))))
+       (map (comp coerce
+                  #(normalize % normalize-def)
+                  contents->map
+                  :content))))
