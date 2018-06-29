@@ -85,17 +85,22 @@
  :vtfeed.handler.feed/delete  {:db #ig/ref :duct.database/sql}
 
  ;; Channels
- :vtfeed.job/tick            {:seconds 60}
+ :vtfeed.job/tick            {:seconds 10}
  :vtfeed.job/subscription    {:concurrency  5}
  :vtfeed.job/updates         {:buf-or-n 1}
 
  :vtfeed.job/subscriber      {:db           #ig/ref :duct.database/sql
                               :concurrency  5
                               :tick         #ig/ref :vtfeed.job/tick
-                              :subscription #ig/ref :vtfeed.job/subscription}
+                              :subscription #ig/ref :vtfeed.job/subscription
+                              :logger       #ig/ref :duct/logger
+                              }
  :vtfeed.job/collector       {:subscription #ig/ref :vtfeed.job/subscription
-                              :updates      #ig/ref :vtfeed.job/updates}
+                              :updates      #ig/ref :vtfeed.job/updates
+                              :logger       #ig/ref :duct/logger
+                              }
  :vtfeed.job/consumer        {:db           #ig/ref :duct.database/sql
                               :updates      #ig/ref :vtfeed.job/updates
+                              :logger       #ig/ref :duct/logger
                               }
  }

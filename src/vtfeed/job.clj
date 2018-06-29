@@ -7,7 +7,7 @@
             [vtfeed.youtube :as youtube]
             [vtfeed.boundary.subscription :as subscription]
             [vtfeed.boundary.feed :as feed]
-            [clojure.tools.logging :as log]))
+            [duct.logger :refer [log]]))
 
 ;; 1. clock generator
 ;; tick event emitter
@@ -51,24 +51,23 @@
 ;; --------------------------------------------
 
 (defn run-subscriber
-  [{:keys [db time limit]}]
+  [{:keys [db time limit logger]}]
   (letfn [(update-last-of-subscription
             [sub]
-            (prn "update-last-of-subscription " sub)
-            (prn "last updated: " (:last sub))
-            (prn "now updated: " time)
+            (log logger :info ::target-subscription sub)
+            (log logger :info ::target-last-updated (:last sub))
+            (log logger :info ::target-now-updated time)
             (subscription/update-subscription-last db (:id sub) time)
             sub)]
     (->> (subscription/list-next-subscription db limit)
          (map update-last-of-subscription))))
 
 (defmethod ig/init-key :vtfeed.job/subscriber
-  [_ {:keys [db concurrency tick subscription]}]
+  [_ {:keys [db concurrency tick subscription logger]}]
   (a/thread
     (loop []
       (when-let [time (a/<!! tick)]
-        (let [subs (run-subscriber {:db db :time time :limit concurrency})]
-          (prn "subscriber : " subs)
+        (let [subs (run-subscriber {:db db :time time :limit concurrency :logger logger})]
           (doall (map (fn [sub] (a/>!! subscription sub)) subs)))
         (recur)))))
 
@@ -82,17 +81,16 @@
 
 (defn run-collector
   [sub]
-  (prn "run-collector: " sub)
   (-> (youtube/fetch-feed {:channel-id (:id sub)})
       deref
       handle-fetch))
 
 (defmethod ig/init-key :vtfeed.job/collector
-  [_ {:keys [subscription updates]}]
+  [_ {:keys [subscription updates logger]}]
   (a/thread
     (loop []
       (when-let [s (a/<!! subscription)]
-        (prn "collector input: " s)
+        (log logger :info ::collector-input s)
         (let [response (run-collector s)]
           (if-let [err (:error response)]
             (prn err)
@@ -102,10 +100,15 @@
 ;; C) forward subscribed data to somewhereesle
 ;; --------------------------------------------
 
+(defn consume-feed
+  [db logger feed]
+  (log logger :info :save-feed feed)
+  (feed/save-feed db feed))
+
 (defmethod ig/init-key :vtfeed.job/consumer
-  [_ {:keys [db updates]}]
+  [_ {:keys [db updates logger]}]
   (a/thread
     (loop []
       (when-let [feeds (a/<!! updates)]
-        (doall (map (partial feed/save-feed db) feeds))
+        (doall (map (partial consume-feed db logger) feeds))
         (recur)))))
