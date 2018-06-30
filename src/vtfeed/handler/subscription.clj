@@ -24,8 +24,8 @@
 (defmethod ig/init-key :vtfeed.handler.subscription/delete [_ {:keys [db]}]
   (fn [{[_ subscription-id] :ataraxy/result}]
     {:pre [(s/valid? ::core/id subscription-id)]}
-    (-> (boundary/delete-subscription db subscription-id)
-        (constantly [::response/ok]))))
+    (boundary/delete-subscription db subscription-id)
+    [::response/ok]))
 
 (defmethod ig/init-key :vtfeed.handler.subscription/get [_ {:keys [db]}]
   (fn [{[_ subscription-id] :ataraxy/result}]
