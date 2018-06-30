@@ -19,8 +19,8 @@
         [::response/ok])))
 
 (defmethod ig/init-key :vtfeed.handler.feed/list [_ {:keys [db]}]
-  (fn [{[_ since] :ataraxy/result}]
-    (let [feeds (boundary/list-feed db (f/parse (f/formatters :date-time) since) 50)]
+  (fn [{[_ until limit] :ataraxy/result}]
+    (let [feeds (boundary/list-feed db (when-not (nil? until) (f/parse (f/formatters :date-time) until)) limit)]
       [::response/ok feeds])))
 
 (defmethod ig/init-key :vtfeed.handler.feed/delete [_ {:keys [db]}]

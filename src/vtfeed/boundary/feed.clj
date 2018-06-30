@@ -16,7 +16,7 @@
   (get-feed [db feed-id])
   (delete-feed [db feed-id])
   (update-feed [db feed])
-  (list-feed [db since limit]))
+  (list-feed [db until limit]))
 
 (extend-protocol Feed
   duct.database.sql.Boundary
@@ -47,13 +47,15 @@
                        (where [:= :id (:id feed)])
                        sql/format)))
 
-  (list-feed [db since limit]
+  (list-feed [db until limit_]
     (core/query db
-                (-> (sql/build :select :*
-                               :from :feeds
-                               :where [:>= :published since]
-                               :limit limit
-                               :order-by [[:updated :asc]])
+                (-> (select :*)
+                    (from :feeds)
+                    (merge-where
+                     (if-not (nil? until)
+                      [:>= :published until]))
+                    (limit limit_)
+                    (order-by [[:updated :desc]])
                     sql/format))))
 
 (defn save-feed

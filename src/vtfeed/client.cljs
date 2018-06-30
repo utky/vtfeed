@@ -26,7 +26,8 @@
 (defn feeds-request
   [time]
   {:method  :get
-   :params  {:since (.toISOString time)}
+   :params  {:until (.toISOString time)
+             :limit 20}
    :uri     "/feeds"
    :timeout 8000
    :response-format (ajax/json-response-format {:keywords? true})
