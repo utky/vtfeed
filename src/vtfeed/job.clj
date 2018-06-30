@@ -77,6 +77,7 @@
   (a/thread
     (loop []
       (when-let [[time _] (a/alts!! [tick ondemand])]
+        (log logger :info ::find-next-feed time)
         (let [subs (run-subscriber {:db db :time time :limit concurrency :logger logger})]
           (doall (map (fn [sub] (a/>!! subscription sub)) subs)))
         (recur)))))
