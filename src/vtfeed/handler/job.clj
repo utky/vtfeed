@@ -38,22 +38,17 @@
 
 (defn collect
   [db logger subscripsions]
-  (doall (map (partial collect-feed db logger) subscripsions)))
+  (apply concat (map (partial collect-feed db logger) subscripsions)))
 
 (defn consume-feed
   [db logger feed]
   (log logger :info :save-feed (select-keys feed [:id :title :author-name]))
   (feed/save-feed db feed))
 
-(defn consume-feeds
-  [db logger feeds]
-  (map (partial consume-feed db logger) feeds))
-
 (defn consume
-  [db logger feeds-per-sub]
-  (log logger :info :start-consume {:feeds-per-sub feeds-per-sub})
-  (map (partial consume-feeds db logger) feeds-per-sub))
-
+  [db logger feeds]
+  (log logger :info :first-of-consume (first feeds))
+  (map (partial consume-feed db logger) feeds))
 
 (defmethod ig/init-key :vtfeed.handler.job/create [_ {:keys [db logger]}]
   (fn [{[_] :ataraxy/result}]
@@ -62,4 +57,5 @@
          (subscribe db logger)
          (collect   db logger)
          (consume   db logger)
+         (#(doall %))
          (reduce (fn [x y] x) [::response/ok]))))
