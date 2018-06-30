@@ -13,6 +13,7 @@
                  [org.postgresql/postgresql "42.1.4"]
                  [honeysql "0.9.2"]
                  [http-kit "2.2.0"]
+                 [clj-http "3.9.0"]
                  [org.clojure/data.json "0.2.6"]
                  [clj-time "0.14.3"]
                  [jarohen/chime "0.2.2"]

@@ -87,27 +87,28 @@
  :vtfeed.handler.feed/list    {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.feed/delete  {:db #ig/ref :duct.database/sql}
 
- :vtfeed.handler.job/create   {:ch #ig/ref :vtfeed.job/ondemand}
+ :vtfeed.handler.job/create   {:db      #ig/ref :duct.database/sql
+                               :logger  #ig/ref :duct/logger}
 
  ;; Channels
- :vtfeed.job/tick            {:seconds 10}
- :vtfeed.job/ondemand        {:buf-or-n 1}
- :vtfeed.job/subscription    {:concurrency  5}
- :vtfeed.job/updates         {:buf-or-n 1}
+ ;;:vtfeed.job/tick            {:seconds 10}
+ ;;:vtfeed.job/ondemand        {:buf-or-n 1}
+ ;;:vtfeed.job/subscription    {:concurrency  5}
+ ;;:vtfeed.job/updates         {:buf-or-n 1}
 
- :vtfeed.job/subscriber      {:db           #ig/ref :duct.database/sql
-                              :concurrency  5
-                              :tick         #ig/ref :vtfeed.job/tick
-                              :ondemand     #ig/ref :vtfeed.job/ondemand
-                              :subscription #ig/ref :vtfeed.job/subscription
-                              :logger       #ig/ref :duct/logger
-                              }
- :vtfeed.job/collector       {:subscription #ig/ref :vtfeed.job/subscription
-                              :updates      #ig/ref :vtfeed.job/updates
-                              :logger       #ig/ref :duct/logger
-                              }
- :vtfeed.job/consumer        {:db           #ig/ref :duct.database/sql
-                              :updates      #ig/ref :vtfeed.job/updates
-                              :logger       #ig/ref :duct/logger
-                              }
+ ;;:vtfeed.job/subscriber      {:db           #ig/ref :duct.database/sql
+ ;;                             :concurrency  5
+ ;;                             :tick         #ig/ref :vtfeed.job/tick
+ ;;                             :ondemand     #ig/ref :vtfeed.job/ondemand
+ ;;                             :subscription #ig/ref :vtfeed.job/subscription
+ ;;                             :logger       #ig/ref :duct/logger
+ ;;                             }
+ ;;:vtfeed.job/collector       {:subscription #ig/ref :vtfeed.job/subscription
+ ;;                             :updates      #ig/ref :vtfeed.job/updates
+ ;;                             :logger       #ig/ref :duct/logger
+ ;;                             }
+ ;;:vtfeed.job/consumer        {:db           #ig/ref :duct.database/sql
+ ;;                             :updates      #ig/ref :vtfeed.job/updates
+ ;;                             :logger       #ig/ref :duct/logger
+ ;;                             }
  }

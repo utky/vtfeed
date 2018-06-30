@@ -1,17 +1,27 @@
 (ns vtfeed.youtube
   (:require [org.httpkit.client :as http]
+            [clj-http.client :as client]
             [clojure.xml :as xml]
-            [vtfeed.core.feed :as core]))
+            [vtfeed.core.feed :as core]
+            [duct.logger :refer [log]]))
 
 (def youtube-video-feed
   "https://www.youtube.com/feeds/videos.xml")
 
+(defn- spy-response
+  [logger res]
+  (log logger :info :end-request {})
+  res)
+
 (defn fetch-feed
   "Fetchs and returns atom data from youtube channel"
-  [{:keys [channel-id]}]
-  (http/get youtube-video-feed
-            {:timeout      (* 60 1000)
-             :query-params {:channel_id channel-id}}))
+  [logger {:keys [channel-id]}]
+  (log logger :info :start-request {:channel-id channel-id})
+  (->> {:timeout      (* 60 1000)
+        :query-params {:channel_id channel-id}}
+       (client/get youtube-video-feed)
+       (spy-response logger)))
+       ;;#(@(http/get youtube-video-feed %))))
 
 (defn read-xml-seq
   [content]
