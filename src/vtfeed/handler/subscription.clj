@@ -10,11 +10,12 @@
 (defmethod ig/init-key :vtfeed.handler.subscription/create [_ {:keys [db]}]
   (fn [{[_ subscription] :ataraxy/result}]
     {:pre [(s/valid? ::core/subscription subscription)]}
-    (-> subscription
-        (assoc :created (t/now))
-        (assoc :last    (t/now))
-        (#(boundary/create-subscription db %))
-        (constantly [::response/ok]))))
+    (boundary/create-subscription
+     db
+     (-> subscription
+         (assoc :created (t/now))
+         (assoc :last    (t/now))))
+    [::response/ok]))
 
 (defmethod ig/init-key :vtfeed.handler.subscription/list [_ {:keys [db]}]
   (fn [{[_] :ataraxy/result}]
