@@ -68,9 +68,12 @@
     [:get]    [:subscription/get    subscription-id]}}
 
   "/feeds"
-  {[:post {feed :body-params}]              [:feed/create feed]
-  [:get #{since}]                      [:feed/list since]
-  ["/" feed-id]                              {[:delete] [:feed/delete feed-id]}}}
+  {[:post {feed :body-params}]               [:feed/create feed]
+   [:get #{since}]                           [:feed/list since]
+   ["/" feed-id]
+   {[:delete]                                [:feed/delete feed-id]}}
+  "/jobs"
+  {[:post]                                   [:job/create]}}
 
 
  :vtfeed.handler.static/index         {}
@@ -84,14 +87,18 @@
  :vtfeed.handler.feed/list    {:db #ig/ref :duct.database/sql}
  :vtfeed.handler.feed/delete  {:db #ig/ref :duct.database/sql}
 
+ :vtfeed.handler.job/create   {:ch #ig/ref :vtfeed.job/ondemand}
+
  ;; Channels
  :vtfeed.job/tick            {:seconds 10}
+ :vtfeed.job/ondemand        {:buf-or-n 1}
  :vtfeed.job/subscription    {:concurrency  5}
  :vtfeed.job/updates         {:buf-or-n 1}
 
  :vtfeed.job/subscriber      {:db           #ig/ref :duct.database/sql
                               :concurrency  5
                               :tick         #ig/ref :vtfeed.job/tick
+                              :ondemand     #ig/ref :vtfeed.job/ondemand
                               :subscription #ig/ref :vtfeed.job/subscription
                               :logger       #ig/ref :duct/logger
                               }

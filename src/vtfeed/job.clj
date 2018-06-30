@@ -26,6 +26,16 @@
   [_ ch]
   (a/close! ch))
 
+;; 1.1 Ondemand queue from web api request
+(defmethod ig/init-key :vtfeed.job/ondemand
+  [_ {:keys [buf-or-n]}]
+  (a/chan (a/dropping-buffer buf-or-n)))
+
+(defmethod ig/halt-key! :vtfeed.job/ondemand
+  [_ ch]
+  (a/close! ch))
+
+
 ;; 2. buffer for array of subscription
 ;; source of channel update
 ;; --------------------------------------------
@@ -63,10 +73,10 @@
          (map update-last-of-subscription))))
 
 (defmethod ig/init-key :vtfeed.job/subscriber
-  [_ {:keys [db concurrency tick subscription logger]}]
+  [_ {:keys [db concurrency tick ondemand subscription logger]}]
   (a/thread
     (loop []
-      (when-let [time (a/<!! tick)]
+      (when-let [[time _] (a/alts!! [tick ondemand])]
         (let [subs (run-subscriber {:db db :time time :limit concurrency :logger logger})]
           (doall (map (fn [sub] (a/>!! subscription sub)) subs)))
         (recur)))))
