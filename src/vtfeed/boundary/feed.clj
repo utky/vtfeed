@@ -55,7 +55,7 @@
                      (if-not (nil? until)
                       [:>= :published until]))
                     (limit limit_)
-                    (order-by [[:updated :desc]])
+                    (order-by [[:published :desc]])
                     sql/format))))
 
 (defn save-feed
