@@ -11,8 +11,8 @@
 
 (defn query
   [db q]
-  (jdbc/query (:spec db) q :indetifies kebab))
+  (jdbc/query (:spec db) q :identifiers kebab))
 
 (defn execute!
   [db q]
-  (jdbc/execute! (:spec db) q :indetifies kebab))
+  (jdbc/execute! (:spec db) q :identifiers kebab))

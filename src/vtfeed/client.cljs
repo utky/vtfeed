@@ -131,6 +131,7 @@
 (defn clock
   []
   [:div
+
    (-> @(rf/subscribe [:time])
        .toTimeString
        (str/split " ")
@@ -138,45 +139,94 @@
 
 (defn add-subscription
   []
-  [:div
-   "Channel ID: "
-   [:input {:type "text"
-            :value @(rf/subscribe [:subscription])
-            :on-change #(rf/dispatch [:subscription-change (-> % .-target .-value)])}]
-   [:input {:type "button"
-            :value "+"
-            :on-click #(rf/dispatch [:subscription-add @(rf/subscribe [:subscription])])}]])
+  [:div.field.has-addons
+   [:div.control
+    [:input.input
+     {:type "text"
+      :placeholder "Channel ID"
+      :value @(rf/subscribe [:subscription])
+      :on-change #(rf/dispatch [:subscription-change (-> % .-target .-value)])}]]
+   [:div.control
+    [:a.button
+     {:href "#"
+      :on-click #(rf/dispatch [:subscription-add @(rf/subscribe [:subscription])])}
+     "+"]]])
 
 (defn feed-entry
   [feed]
   ^{:key (:id feed)}
-  [:li
-   [:div.feed
-    [:div.feed-header
-     (:author_name feed)]
-    [:div.feed-body
-     [:a {:href (:url feed)}
-      (:title feed)]]
-    [:div.feed-footer
-     (:published feed)]]])
+  [:article.feed.media
+   [:figure.media-left
+    [:a.image.is-4by3
+     {:href (:url feed)
+      :style {:width 210}}
+     [:img {:src (:thumbnail feed)}]]]
+   [:div.media-content
+    [:p.title.is-5
+     [:a.has-text-dark
+       {:href (:url feed)
+        :style {:text-decoration "none"}}
+       (:title feed)]]
+    [:p.subtitle.is-6
+     [:a.has-text-grey
+      {:href (:author_uri feed)
+       :style {:text-decoration "none"}}
+      (:author_name feed)]]]
+   [:div.media-right
+    [:p.has-text-grey-light (:published feed)]]])
 
 (defn feed-list
   []
-  [:ul
+  [:div
    (for [feed @(rf/subscribe [:feeds])]
-      (feed-entry feed))])
+     (feed-entry feed))])
 
 (defn messages
   []
   [:div])
 
+(defn menu-brand
+  []
+  [:div.navbar-brand
+   [:a.navbar-item
+    {:href "/index.html"}
+    "vtfeed"]
+   [:a.navbar-burger
+    {:role "button"
+     :aria-label "menu"
+     :aria-expanded "false"}
+    [:span {:aria-hidden "true"}]
+    [:span {:aria-hidden "true"}]
+    [:span {:aria-hidden "true"}]
+    ]])
+
+(defn menu-subscription
+  []
+  [:a.navbar-item
+   {:href "#"}
+   "Subscription"])
+
 (defn ui
   []
-  [:div
-   [messages]
-   [add-subscription]
-   [clock]
-   [feed-list]])
+  [:div.container
+   [:div
+    [messages]]
+   [:nav.navbar
+    {:role "navigation"
+     :aria-label "main navigation"}
+    [menu-brand]
+    [:div.navbar-menu
+     [:div.navbar-start
+      [menu-subscription]]]]
+   [:div.section
+    [add-subscription]
+    [:div.columns
+     [feed-list]
+     ]
+    ]
+   [:div.footer
+    [:p
+     "Copyright è¢Ì 2018 Yutaka Imamura, All rights reserved"]]])
 
 ;; -- Entry Point -------------------------------------------------------------
 
