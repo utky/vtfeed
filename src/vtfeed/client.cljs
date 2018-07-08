@@ -169,9 +169,9 @@
        (:title feed)]]
     [:p.subtitle.is-6
      [:a.has-text-grey
-      {:href (:author_uri feed)
+      {:href (:author-uri feed)
        :style {:text-decoration "none"}}
-      (:author_name feed)]]]
+      (:author-name feed)]]]
    [:div.media-right
     [:p.has-text-grey-light (:published feed)]]])
 
