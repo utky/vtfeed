@@ -3,6 +3,8 @@
             [re-frame.core :as rf]
             [day8.re-frame.http-fx]
             [ajax.core :as ajax]
+            [cljs-time.core :as t]
+            [cljs-time.format :as f]
             [clojure.string :as str]))
 
 ;; A detailed walk-through of this source code is provided in the docs:
@@ -152,6 +154,17 @@
       :on-click #(rf/dispatch [:subscription-add @(rf/subscribe [:subscription])])}
      "+"]]])
 
+(def out-fmt
+  (f/formatter "MM-dd HH:mm"))
+
+(def in-fmt
+  (f/formatters :date-time))
+
+(defn format-utc->local
+  [dt]
+  (f/unparse out-fmt
+             (t/to-default-time-zone (f/parse in-fmt dt))))
+
 (defn feed-entry
   [feed]
   ^{:key (:id feed)}
@@ -173,7 +186,7 @@
        :style {:text-decoration "none"}}
       (:author-name feed)]]]
    [:div.media-right
-    [:p.has-text-grey-light (:published feed)]]])
+    [:p.has-text-grey-light (format-utc->local (:published feed))]]])
 
 (defn feed-list
   []
